@@ -8,9 +8,9 @@ Gem::Specification.new do |spec|
   spec.version       = Xml2yaml::VERSION
   spec.authors       = ["Tamara Temple"]
   spec.email         = ["tamouse@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{convert XML into YAML}
+  spec.summary       = %q{convert XML into YAML}
+  spec.homepage      = "http://github.com/tamouse/xml2yaml"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('rake', '~> 0.9.2')
   spec.add_dependency('methadone', '~> 1.3.0')
   spec.add_development_dependency('rspec')
+  spec.add_dependency("activesupport")
 end
