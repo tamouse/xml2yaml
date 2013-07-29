@@ -10,4 +10,8 @@ Feature: My bootstrapped app kinda works
     And the banner should document that this app takes options
     And the following options should be documented:
       |--version|
-    And the banner should document that this app takes no arguments
+      |--[no-]force|
+      |--[no-]verbose|
+      |--[no-]debug|
+    And the banner should document that this app's arguments are:
+      | xmlfile | which is required |
