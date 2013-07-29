@@ -2,42 +2,67 @@
 
 require 'optparse'
 require 'methadone'
-require 'xml2yaml.rb'
+require 'xml2yaml'
+PROGNAME = File.basename(__FILE__)
 
 class App
   include Methadone::Main
   include Methadone::CLILogging
+  logger.error_formatter = proc { |severity,datetime,progname,msg| "#{severity[0]} #{datetime} #{severity} - #{msg}\n" }
 
-  main do # Add args you want: |like,so|
-    # your program code here
-    # You can access CLI options via
-    # the options Hash
+  main do |xmlfile|
+    logger.level = Logger::WARN
+    logger.level = Logger::INFO if options[:verbose]
+    logger.error_level = Logger::DEBUG if options[:debug]
+    debug "options: #{options}"
+    debug "xmlfile: #{xmlfile}"
+    debug "ARGV: #{ARGV}"
+    $force = options.delete "force"
+    ARGV.each do |xmlfile|
+      debug "xmlfile: #{xmlfile}"
+      yamlfile = self.derive_yaml_file_name(xmlfile,$force)
+      info "Converting #{xmlfile}"
+      xml = File.read(xmlfile)
+      yaml = Xml2yaml.convert(xml)
+      File.write(yamlfile, yaml)
+      info "Wrote #{yamlfile}"
+    end
+    
   end
 
   # supplemental methods here
 
+  def self.derive_yaml_file_name(xmlfile, force=false)
+    xmlfile.sub(/\.xml$/,'.yaml').tap do |yamlfile|
+      debug "yamlfile: #{yamlfile}"
+      raise "#{yamlfile} exists!" if File.exists?(yamlfile) && ! force
+    end
+  end
+  
   # Declare command-line interface here
 
-  # description "one line description of your app"
-  #
+  description "Convert XML file to YAML file"
+
   # Accept flags via:
   # on("--flag VAL","Some flag")
   # options[flag] will contain VAL
   #
   # Specify switches via:
-  # on("--[no-]switch","Some switch")
-  #
+  on("--[no-]debug","Turn on debug mode")
+  on("--[no-]verbose","Turn on verbose mode")
+  on("-f","--[no-]force","Force overwrite if destination file exists")
+
   # Or, just call OptionParser methods on opts
   #
   # Require an argument
-  # arg :some_arg 
-  #
+  arg :xmlfile,"Files to convert to YAML.","Each file will be saved as <basename>.yaml"
+
   # # Make an argument optional
   # arg :optional_arg, :optional
 
   version Xml2yaml::VERSION
 
-  use_log_level_option
+  # use_log_level_option
 
   go!
 end
